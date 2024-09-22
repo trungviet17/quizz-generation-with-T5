@@ -1,5 +1,5 @@
 from torch.utils.data import Dataset
-from transformers import  T5Tokenizer,T5ForConditionalGeneration
+from transformers import  T5Tokenizer
 import  tqdm
 import copy 
 import pandas as pd 
