@@ -46,12 +46,6 @@ class QuestgenDatamodule(pl.LightningDataModule):
         save_path = "./data"
         train_df.to_csv(save_path + "/train", index = False)
         valid_df.to_csv(save_path + "/valid", index = False)
-
-
-
-
-
-        return super().prepare_data()
     
 
     def setup(self): 
