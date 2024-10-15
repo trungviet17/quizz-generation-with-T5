@@ -10,8 +10,8 @@ class T5Finetuner(pl.LightningModule):
         Khởi tạo att cần thiết để xây dựng mô hình bao bồm model, tokenizer, ... 
         """
         super(T5Finetuner, self).__init__()
-        self.model = T5ForConditionalGeneration.from_pretrain("t5-base")
-        self.tokenizer = T5Tokenizer.from_pretrain("t5-base")
+        self.model = T5ForConditionalGeneration.from_pretrained("t5-base")
+        self.tokenizer = T5Tokenizer.from_pretrained("t5-base")
         self.hpagrams = hparams
         self.save_hyperparameters(hparams)
     

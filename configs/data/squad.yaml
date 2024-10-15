@@ -1,0 +1,20 @@
+_target_: src.data.questgen_datamodule.QuestgenDatamodule
+
+data_dir: ${paths.data_dir}/questgen
+
+batch_size: 32 # Needs to be divisible by the number of devices (e.g., if in a distributed setup)
+
+num_workers: 2
+pin_memory: False
+
+
+data_train: 
+  _target_: src.data.components.questgen_dataset.SQuADquestgen
+  csv_file: train_questgen.csv
+
+
+data_validation: 
+  _target_: src.data.components.questgen_dataset.SQuADquestgen
+  csv_file: val_questgen.csv
+
+masking_chance: 0.15
