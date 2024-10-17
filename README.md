@@ -1,6 +1,6 @@
 <div align="center">
 
-# T5 MCQ Distractor generation model
+# T5 MCQ Question-Answer generation model
 
 <a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white"></a>
 <a href="https://pytorchlightning.ai/"><img alt="Lightning" src="https://img.shields.io/badge/-Lightning-792ee5?logo=pytorchlightning&logoColor=white"></a>
@@ -10,8 +10,7 @@
 </div>
 
 ## Description
-In this project, I train the T5 model for the task of question generation based on a given context and answer. The dataset used during training is SQuAD (1.1)
-
+In this project, I will use the T5 model for training to generate a question-answer model for multiple-choice quizzes based on a given user context. The model uses the SQuAD dataset and generates distractors based on the RACE dataset
 
 ## Installation
 

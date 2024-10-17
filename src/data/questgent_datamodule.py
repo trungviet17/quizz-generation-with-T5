@@ -1,55 +1,49 @@
 import lightning.pytorch as pl 
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
+from transformers import T5Tokenizer
 from components.questgen_dataset import SQuADquestgen
 from datasets import load_dataset
 import pandas as pd 
+
+from omegaconf import DictConfig, OmegaConf
+import hydra
+import pyrootutils
+from tqdm import tqdm
 
 
 class QuestgenDatamodule(pl.LightningDataModule): 
 
     def __init__(self, 
-                train_dataset : SQuADquestgen, 
-                valid_dataset : SQuADquestgen, 
-                hpagrams): 
-        super().init()
-        self.hparams = hpagrams
-        self.train_dataset = train_dataset
-        self.valid_dataset= valid_dataset
-        self.save_hyperparameters(hpagrams)
+                train_dir : str, 
+                val_dir: str, 
+                tokenizer : T5Tokenizer,
+                train_test_split: float = 0.2,
+                max_len_inp: int = 512,
+                max_len_out: int = 96, 
+                batch_size: int = 8, 
+                num_workers : int = 4
+                ): 
+        super(QuestgenDatamodule, self).__init__()
+        self.save_hyperparameters(logger=False )
 
 
- 
+
     def prepare_data(self) -> None:
         """Download du lieu neu can """
-        train_set = load_dataset("squad", split = "train")
-        valid_set = load_dataset("squad", split = "valid")
-
-        def trans_to_df(df: pd.DataFrame, dataset): 
-
-            for idx, row  in enumerate(dataset): 
-                context = row['context']
-                question = row['question']
-                answer = row['answers']['text'][0]
-
-                df.loc[idx] = [context] + [question] + [answer]
-        
-            return df 
-        
-        train_df = trans_to_df(
-            pd.DataFrame(columns= ['context', "question", "answer"]), train_set
-        )
-
-        valid_df = trans_to_df(
-            pd.DataFrame(columns= ['context', "question", "answer"]), valid_set
-        )
-
-        save_path = "./data"
-        train_df.to_csv(save_path + "/train", index = False)
-        valid_df.to_csv(save_path + "/valid", index = False)
+        pass 
     
 
-    def setup(self): 
-        pass 
+    def setup(self, stage: str = None):
+        train_df = pd.read_csv(self.hparams.train_dir)
+        val_df = pd.read_csv(self.hparams.val_dir)
+
+        train_df, test_df = random_split(train_df, [int(len(train_df) * (1 - self.hparams.train_test_split)), int(len(train_df) * self.hparams.train_test_split)])
+
+        self.train_dataset = SQuADquestgen(train_df, self.hparams.tokenizer, self.hparams.max_len_inp, self.hparams.max_len_out)
+        self.test_dataset = SQuADquestgen(test_df, self.hparams.tokenizer, self.hparams.max_len_inp, self.hparams.max_len_out)
+
+        self.valid_dataset = SQuADquestgen(val_df, self.hparams.tokenizer, self.hparams.max_len_inp, self.hparams.max_len_out)
+
 
 
     def train_dataloader(self) -> DataLoader: 
@@ -63,15 +57,34 @@ class QuestgenDatamodule(pl.LightningDataModule):
     def valid_dataloader(self) -> DataLoader: 
 
         return DataLoader(
-            self.valid_dataset,
-            batch_size = self.hpagrams.batch_size, 
-            shuffle = True, 
-            num_workers = self.hpagrams.num_workers
-        )
+                self.valid_dataset,
+                batch_size = self.hpagrams.batch_size, 
+                shuffle = True, 
+                num_workers = self.hpagrams.num_workers
+            )
     
+    def test_dataloader(self):
+        return DataLoader(
+                self.test_dataset,
+                batch_size = self.hpagrams.batch_size, 
+                shuffle = True, 
+                num_workers = self.hpagrams.num_workers
+            )
+
+
 
 if __name__== "__main__": 
 
+    import warnings
+    warnings.filterwarnings("ignore")
 
-    def test(): 
+
+    pyrootutils.setup_root(__file__, indicator = ".project-root", pythonpath = True)
+    path = pyrootutils.find_root(search_from=__file__, indicator = '.project-root')
+
+    config_path = str(path/ 'configs' / 'data')
+    output_path = str(path / 'output')
+
+
+    def test_datamodule(congif: DictConfig): 
         pass 
