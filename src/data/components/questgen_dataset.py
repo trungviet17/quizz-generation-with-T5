@@ -23,6 +23,11 @@ class SQuADquestgen(Dataset):
         self.max_len_out = max_len_out 
         self.tokenizer = tokenizer
         self.masking_chance = masking_chance
+
+        # update special token 
+        self.tokenizer.add_tokens(sep_token)
+        self.tokenizer.add_tokens(mask_token)
+
         self.SEP_TOKEN = sep_token
         self.MASK_TOKEN = mask_token
 
@@ -111,6 +116,6 @@ if __name__ == "__main__":
         print("DATASET TESTING PASSED")
         pass 
         
-    # test_dataset()  
+    test_dataset()  
 
 

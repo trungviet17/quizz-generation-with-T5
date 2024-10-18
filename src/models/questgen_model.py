@@ -88,7 +88,7 @@ if __name__ == '__main__':
 
     path = pyrootutils.find_root(search_from=__file__, indicator=".project-root")
 
-    config_path = str(path / "config" / "model")
+    config_path = str(path / "configs" / "model")
 
     @hydra.main(version_base="1.3", config_path= config_path, config_name = "t5finetuner")
     def test_model(config: DictConfig):   
