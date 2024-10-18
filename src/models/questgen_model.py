@@ -3,6 +3,10 @@ from transformers import T5Tokenizer, T5ForConditionalGeneration, AdamW
 from omegaconf import DictConfig, OmegaConf
 import torch.optim as optim
 
+import warnings 
+import hydra 
+import pyrootutils
+
 
 class T5Finetuner(pl.LightningModule): 
     
@@ -26,8 +30,8 @@ class T5Finetuner(pl.LightningModule):
         )
         
         return output.loss, output.logits
-
     
+
     def training_step(self, batch, batch_idx): 
         """
             training step 
@@ -71,11 +75,26 @@ class T5Finetuner(pl.LightningModule):
         """
         optimizer setup 
         """
-        return AdamW(self.parameters(), lr = self.learning_rate)
+        optimizer = self.hparams.optimizer(params = self.parameters())
+        scheduler = self.hparams.scheduler(optimizer = optimizer)
+        return optimizer,scheduler
     
 
 
 if __name__ == '__main__': 
 
-    def test_model(): 
-        pass 
+    warnings.filterwarnings("ignore")
+    pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
+
+    path = pyrootutils.find_root(search_from=__file__, indicator=".project-root")
+
+    config_path = str(path / "config" / "model")
+
+    @hydra.main(version_base="1.3", config_path= config_path, config_name = "t5finetuner")
+    def test_model(config: DictConfig):   
+
+        model = hydra.utils.instantiate(config)
+
+        print(model)
+    
+    test_model()
