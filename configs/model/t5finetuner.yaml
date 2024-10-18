@@ -1,0 +1,24 @@
+_target_: src.model.questgen_model.T5Finetuner
+
+model: 
+  _target_: transformers.T5ForConditionalGeneration.from_pretrained
+  pretrained_model_name_or_path: t5-base
+
+
+tokenizer:
+  _target_: transformers.T5Tokenizer.from_pretrained
+  pretrained_model_name_or_path: t5-base
+
+optimizer: 
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 3e-4
+  weight_decay: 0.01
+
+scheduler: 
+  _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+  _partial_: true
+  mode : min
+  factor: 0.1 
+
+

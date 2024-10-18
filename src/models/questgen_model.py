@@ -1,28 +1,25 @@
 import lightning.pytorch as pl 
 from transformers import T5Tokenizer, T5ForConditionalGeneration, AdamW
 from omegaconf import DictConfig, OmegaConf
+import torch.optim as optim
 
 
 class T5Finetuner(pl.LightningModule): 
     
-    def __init__(self, Model_name: str, learning_rate: float,   hparams: DictConfig): 
+    def __init__(self,model: T5ForConditionalGeneration, tokenizer: T5Tokenizer, 
+                 optimizer: optim.Optimizer, scheduler: optim.lr_scheduler._LRScheduler ):
         """
         Khởi tạo att cần thiết để xây dựng mô hình bao bồm model, tokenizer, ... 
         """
         super(T5Finetuner, self).__init__()
-        self.model = T5ForConditionalGeneration.from_pretrained(Model_name)
-        self.tokenizer = T5Tokenizer.from_pretrained(Model_name)
-        self.tokenizer.add_special_tokens({'sep_token': '<sep>'})
-        self.hpagrams = hparams
-        self.learning_rate = learning_rate
-        self.save_hyperparameters(hparams)
+        self.save_hyperparameters(logger=False)
     
     
     def forward(self, input_ids, attention_mask = None, labels = None): 
         """
         feed forward 
         """
-        output = self.model(
+        output = self.hparams.model(
             input_ids = input_ids, 
             attention_mask  = attention_mask, 
             labels = labels
@@ -80,5 +77,5 @@ class T5Finetuner(pl.LightningModule):
 
 if __name__ == '__main__': 
 
-    def test(): 
+    def test_model(): 
         pass 

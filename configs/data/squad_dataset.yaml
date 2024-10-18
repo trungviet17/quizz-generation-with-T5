@@ -1,0 +1,12 @@
+
+tokenizer:
+  _target_: transformers.T5Tokenizer.from_pretrained
+  pretrained_model_name_or_path: t5-small
+
+file_path: data/questgen/train.csv  
+max_len_inp: 512  
+max_len_out: 96   
+
+sep_token: "<sep>"  
+mask_token: "<mask>"  
+masking_chance: 0.2 

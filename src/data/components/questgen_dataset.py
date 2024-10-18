@@ -99,14 +99,16 @@ if __name__ == "__main__":
     config_path = str(path/ 'configs' / 'data')
 
     # test dataset module 
-    @hydra.main(version_base="1.3", config_path=config_path, config_name='squad')
+    @hydra.main(version_base="1.3", config_path=config_path, config_name='squad_dataset')
     def test_dataset(config: DictConfig): 
+        print("TEST DATASET")
+        dataset: SQuADquestgen = hydra.utils.instantiate(config)
 
-        tokenizer = T5Tokenizer.from_pretrained(config.tokenizer_name)
-        dataset = SQuADquestgen(tokenizer, config.file_path, max_len_inp = config.max_len_inp, max_len_out = config.max_len_out, masking_chance= config.masking_chance)
         print(f"Dataset size: {len(dataset)}")
         print(dataset[0])
+        
 
+        print("DATASET TESTING PASSED")
         pass 
         
     # test_dataset()  

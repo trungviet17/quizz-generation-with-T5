@@ -13,16 +13,8 @@ from tqdm import tqdm
 
 class QuestgenDatamodule(pl.LightningDataModule): 
 
-    def __init__(self, 
-                train_dir : str, 
-                val_dir: str, 
-                tokenizer : T5Tokenizer,
-                train_test_split: float = 0.2,
-                max_len_inp: int = 512,
-                max_len_out: int = 96, 
-                batch_size: int = 8, 
-                num_workers : int = 4
-                ): 
+    def __init__(self, train_dir : str, val_dir: str, tokenizer : T5Tokenizer,train_test_split: float = 0.2,
+                max_len_inp: int = 512,max_len_out: int = 96, batch_size: int = 8, num_workers : int = 4): 
         super(QuestgenDatamodule, self).__init__()
         self.save_hyperparameters(logger=False )
 
@@ -86,5 +78,24 @@ if __name__== "__main__":
     output_path = str(path / 'output')
 
 
-    def test_datamodule(congif: DictConfig): 
-        pass 
+    @hydra.main(version_base="1.3", config_path=config_path, config_name="squad")
+    def test_datamodule(cofig: DictConfig):
+        print("TEST DATAMODULE")
+
+        datamodule: QuestgenDatamodule = hydra.utils.instantiate(cofig)
+
+        datamodule.prepare_data()
+
+        datamodule.setup()
+
+        train_loader = datamodule.train_dataloader()
+        simple_batch = next(iter(train_loader))
+        input_ = simple_batch[0]
+        output = simple_batch[1]
+
+        print(f"Shape of Input is {input_.shape}")
+        print(f"Shape of output is {output.shape}")
+        
+        print(f"DATAMODULE PASSED")
+
+    
