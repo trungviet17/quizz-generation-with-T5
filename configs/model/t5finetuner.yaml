@@ -1,4 +1,4 @@
-_target_: src.model.questgen_model.T5Finetuner
+_target_: src.models.questgen_model.T5Finetuner
 
 model: 
   _target_: transformers.T5ForConditionalGeneration.from_pretrained

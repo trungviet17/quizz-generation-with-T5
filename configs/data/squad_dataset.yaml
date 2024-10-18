@@ -3,7 +3,7 @@ tokenizer:
   _target_: transformers.T5Tokenizer.from_pretrained
   pretrained_model_name_or_path: t5-small
 
-file_path: data/questgen/train.csv  
+file_path: ./data/questgen/train_questgen.csv
 max_len_inp: 512  
 max_len_out: 96   
 

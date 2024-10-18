@@ -84,7 +84,7 @@ if __name__== "__main__":
 
         datamodule: QuestgenDatamodule = hydra.utils.instantiate(cofig)
 
-        print("PASS INIT")
+        print("PASS INIT ")
         datamodule.prepare_data()
 
         
