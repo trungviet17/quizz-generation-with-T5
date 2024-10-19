@@ -79,7 +79,7 @@ if __name__== "__main__":
 
     config_path = str(path/ 'configs' / 'data')
     output_path = str(path / 'output')
-    OmegaConf.register_new_resolver("root_path", lambda x: str(path / x))
+    OmegaConf.register_new_resolver("root_path", lambda x: str(path))
 
     @hydra.main(version_base="1.3", config_path=config_path, config_name="squad")
     def test_datamodule(cofig: DictConfig):

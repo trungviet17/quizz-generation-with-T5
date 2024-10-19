@@ -102,7 +102,7 @@ if __name__ == "__main__":
     path = pyrootutils.find_root(search_from=__file__, indicator = '.project-root')
 
     config_path = str(path/ 'configs' / 'data')
-    OmegaConf.register_new_resolver("root_path", lambda x: str(path / x))
+    OmegaConf.register_new_resolver("root_path", lambda x: str(path))
     # test dataset module 
     @hydra.main(version_base="1.3", config_path=config_path, config_name='squad_dataset')
     def test_dataset(config: DictConfig):  

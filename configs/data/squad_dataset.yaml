@@ -5,7 +5,7 @@ tokenizer:
 
 data_frame: 
   _target_: pandas.read_csv
-  path : ${data_path}
+  path : ${root_path}
 
 max_len_inp: 512  
 max_len_out: 96   
