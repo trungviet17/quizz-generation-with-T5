@@ -5,7 +5,7 @@ tokenizer:
 
 data_frame: 
   _target_: pandas.read_csv
-  path : ${root_path}
+  path : ${root_path}/data/questgen/questgen_train.csv
 
 max_len_inp: 512  
 max_len_out: 96   

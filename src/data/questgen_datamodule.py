@@ -27,10 +27,8 @@ class QuestgenDatamodule(pl.LightningDataModule):
     
 
     def setup(self, stage: str = None, data_folder: str = None) -> None:
-        train_path = str(path / self.hparams.train_dir)
-        val_path = str(path / self.hparams.val_dir)
-        train_df = pd.read_csv(train_path)
-        val_df = pd.read_csv(val_path)
+        train_df = pd.read_csv(self.hparams.train_dir)
+        val_df = pd.read_csv(self.hparams.val_dir)
 
         train_df, test_df = random_split(train_df, [int(len(train_df) * (1 - self.hparams.train_test_split)), int(len(train_df) * self.hparams.train_test_split)])
 
@@ -79,13 +77,20 @@ if __name__== "__main__":
 
     config_path = str(path/ 'configs' / 'data')
     output_path = str(path / 'output')
-    OmegaConf.register_new_resolver("root_path", lambda x: str(path))
+    OmegaConf.register_new_resolver("root_path", lambda: str(path))
 
     @hydra.main(version_base="1.3", config_path=config_path, config_name="squad")
     def test_datamodule(cofig: DictConfig):
-        print("TEST DATAMODULE")
-
-        datamodule: QuestgenDatamodule = hydra.utils.instantiate(cofig)
+        print("TEST DATAMODULE: ")
+        
+        datamodule = QuestgenDatamodule(
+            train_dir = str(path / cofig.train_dir),
+            val_dir = str(path / cofig.val_dir),
+            tokenizer = cofig.tokenizer,
+            train_test_split = cofig.train_test_split,
+            max_len_inp = cofig.max_len_inp,
+            max_len_out = cofig.max_len_out
+        )
 
         print("PASS INIT")
 
