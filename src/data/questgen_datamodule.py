@@ -26,11 +26,13 @@ class QuestgenDatamodule(pl.LightningDataModule):
         pass 
     
 
-    def setup(self, stage: str = None, data_folder: str = None) -> None:
+    def setup(self, stage: str = None) -> None:
         train_df = pd.read_csv(self.hparams.train_dir)
         val_df = pd.read_csv(self.hparams.val_dir)
 
-        train_df, test_df = random_split(train_df, [int(len(train_df) * (1 - self.hparams.train_test_split)), int(len(train_df) * self.hparams.train_test_split)])
+        train_size = int(len(train_df) * self.hparams.train_test_split)
+
+        train_df, test_df = random_split(train_df, [train_size, len(train_df) - train_size])
 
         self.train_dataset = SQuADquestgen(train_df, self.hparams.tokenizer, self.hparams.max_len_inp, self.hparams.max_len_out)
         self.test_dataset = SQuADquestgen(test_df, self.hparams.tokenizer, self.hparams.max_len_inp, self.hparams.max_len_out)
@@ -82,7 +84,7 @@ if __name__== "__main__":
     @hydra.main(version_base="1.3", config_path=config_path, config_name="squad")
     def test_datamodule(cofig: DictConfig):
         print("TEST DATAMODULE: ")
-        
+
         datamodule = QuestgenDatamodule(
             train_dir = str(path / cofig.train_dir),
             val_dir = str(path / cofig.val_dir),
@@ -95,7 +97,7 @@ if __name__== "__main__":
         print("PASS INIT")
 
         datamodule.prepare_data()
-        datamodule.setup(data_folder = path)
+        datamodule.setup() 
         
         print("PASS SETUP")
 
