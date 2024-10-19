@@ -16,6 +16,7 @@ class QuestgenDatamodule(pl.LightningDataModule):
     def __init__(self, train_dir : str, val_dir: str, tokenizer : T5Tokenizer,train_test_split: float = 0.2,
                 max_len_inp: int = 512,max_len_out: int = 96, batch_size: int = 8, num_workers : int = 4, masking_chance: int = 0.2): 
         super(QuestgenDatamodule, self).__init__()
+
         self.save_hyperparameters(logger=False )
 
 
@@ -25,9 +26,11 @@ class QuestgenDatamodule(pl.LightningDataModule):
         pass 
     
 
-    def setup(self, stage: str = None):
-        train_df = pd.read_csv(self.hparams.train_dir)
-        val_df = pd.read_csv(self.hparams.val_dir)
+    def setup(self, stage: str = None, data_folder: str = None) -> None:
+        train_path = str(path / self.hparams.train_dir)
+        val_path = str(path / self.hparams.val_dir)
+        train_df = pd.read_csv(train_path)
+        val_df = pd.read_csv(val_path)
 
         train_df, test_df = random_split(train_df, [int(len(train_df) * (1 - self.hparams.train_test_split)), int(len(train_df) * self.hparams.train_test_split)])
 
@@ -76,7 +79,7 @@ if __name__== "__main__":
 
     config_path = str(path/ 'configs' / 'data')
     output_path = str(path / 'output')
-
+    OmegaConf.register_new_resolver("root_path", lambda x: str(path / x))
 
     @hydra.main(version_base="1.3", config_path=config_path, config_name="squad")
     def test_datamodule(cofig: DictConfig):
@@ -84,11 +87,11 @@ if __name__== "__main__":
 
         datamodule: QuestgenDatamodule = hydra.utils.instantiate(cofig)
 
-        print("PASS INIT ")
-        datamodule.prepare_data()
+        print("PASS INIT")
 
+        datamodule.prepare_data()
+        datamodule.setup(data_folder = path)
         
-        datamodule.setup()
         print("PASS SETUP")
 
         train_loader = datamodule.train_dataloader()

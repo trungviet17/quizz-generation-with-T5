@@ -11,14 +11,14 @@ import pyrootutils
 
 class SQuADquestgen(Dataset): 
     
-    def __init__(self, tokenizer: T5Tokenizer,  file_path: str, max_len_inp: int = 512, 
+    def __init__(self, data_frame: pd.DataFrame,  tokenizer: T5Tokenizer, max_len_inp: int = 512, 
                  max_len_out: int = 96, sep_token: str = "<sep>", mask_token: str = "<mask>", masking_chance: float = 0.2): 
         """
         Khởi tạo các thông tin liên quan tới bộ dữ liệu 
         Input: đường dẫn tới file dữ liệu , chiều dài tối đa của input đầu và và đầu ra 
         Ouput:  
         """
-        self.path = file_path 
+    
         self.max_len_inp = max_len_inp 
         self.max_len_out = max_len_out 
         self.tokenizer = tokenizer
@@ -31,7 +31,7 @@ class SQuADquestgen(Dataset):
         self.SEP_TOKEN = sep_token
         self.MASK_TOKEN = mask_token
 
-        self.data = pd.read_csv(self.path)
+        self.data = data_frame 
         self._processing()
         
     
@@ -102,19 +102,21 @@ if __name__ == "__main__":
     path = pyrootutils.find_root(search_from=__file__, indicator = '.project-root')
 
     config_path = str(path/ 'configs' / 'data')
-
+    OmegaConf.register_new_resolver("root_path", lambda x: str(path / x))
     # test dataset module 
     @hydra.main(version_base="1.3", config_path=config_path, config_name='squad_dataset')
-    def test_dataset(config: DictConfig): 
+    def test_dataset(config: DictConfig):  
+
         print("TEST DATASET")
         dataset: SQuADquestgen = hydra.utils.instantiate(config)
 
         print(f"Dataset size: {len(dataset)}")
+
         print(dataset[0])
         
 
         print("DATASET TESTING PASSED")
-        pass 
+
         
     test_dataset()  
 

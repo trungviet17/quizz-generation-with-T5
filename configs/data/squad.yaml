@@ -1,7 +1,7 @@
 _target_: src.data.questgen_datamodule.QuestgenDatamodule
 
-train_dir:  ./data/questgen/train_questgen.csv
-val_dir: ./data/questgen/val_questgen.csv
+train_dir:  ${root_path}/data/questgen/train_questgen.csv
+val_dir: ${root_path}/data/questgen/val_questgen.csv
 
 # Specify the T5 tokenizer model, such as "t5-small"
 tokenizer:
