@@ -16,7 +16,6 @@ class QuestgenDatamodule(pl.LightningDataModule):
     def __init__(self, train_dir : str, val_dir: str, tokenizer : T5Tokenizer,train_test_split: float = 0.2,
                 max_len_inp: int = 512,max_len_out: int = 96, batch_size: int = 8, num_workers : int = 4, masking_chance: int = 0.2): 
         super(QuestgenDatamodule, self).__init__()
-
         self.save_hyperparameters(logger=False )
 
 

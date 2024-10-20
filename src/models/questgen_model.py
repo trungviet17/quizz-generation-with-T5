@@ -14,8 +14,12 @@ class T5Finetuner(pl.LightningModule):
                  optimizer: optim.Optimizer, scheduler: optim.lr_scheduler._LRScheduler ):
         """
         Khởi tạo att cần thiết để xây dựng mô hình bao bồm model, tokenizer, ... 
+        Sử dụng hparams cho chỉ sử dụng để lưu tham số 
         """
         super(T5Finetuner, self).__init__()
+        self.model = model 
+        self.lr_scheduler = scheduler
+        self.optimizer = optimizer 
         self.save_hyperparameters(logger=False)
     
     
@@ -23,7 +27,7 @@ class T5Finetuner(pl.LightningModule):
         """
         feed forward 
         """
-        output = self.hparams.model(
+        output = self.model(
             input_ids = input_ids, 
             attention_mask  = attention_mask, 
             labels = labels
@@ -75,9 +79,9 @@ class T5Finetuner(pl.LightningModule):
         """
         optimizer setup 
         """
-        optimizer = self.hparams.optimizer(params = self.parameters())
-        scheduler = self.hparams.scheduler(optimizer = optimizer)
-        return optimizer,scheduler
+        self.optimizer = self.optimizer(params = self.parameters())
+        self.lr_scheduler = self.lr_scheduler(optimizer = self.optimizer)
+        return self.optimizer, self.lr_scheduler
     
 
 
