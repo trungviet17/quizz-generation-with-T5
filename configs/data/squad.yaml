@@ -1,12 +1,12 @@
 _target_: src.data.questgen_datamodule.QuestgenDatamodule
 
-train_dir:  data/questgen/train_questgen.csv
-val_dir: data/questgen/val_questgen.csv
+train_dir:  ${paths.data_dir}/questgen/train_questgen.csv
+val_dir: ${paths.data_dir}/questgen/val_questgen.csv
 
 # Specify the T5 tokenizer model, such as "t5-small"
 tokenizer:
   _target_: transformers.T5Tokenizer.from_pretrained
-  pretrained_model_name_or_path: t5-small
+  pretrained_model_name_or_path: t5-base
 
 batch_size: 32  # Needs to be divisible by the number of devices (e.g., if in a distributed setup)
 

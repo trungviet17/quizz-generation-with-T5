@@ -1,9 +1,9 @@
 import lightning.pytorch as pl 
 from torch.utils.data import DataLoader, random_split
 from transformers import T5Tokenizer
-from components.questgen_dataset import SQuADquestgen
 from datasets import load_dataset
 import pandas as pd 
+from src.data.components.questgen_dataset import SQuADquestgen
 
 from omegaconf import DictConfig, OmegaConf
 import hydra
@@ -30,10 +30,10 @@ class QuestgenDatamodule(pl.LightningDataModule):
         train_df = pd.read_csv(self.hparams.train_dir)
         val_df = pd.read_csv(self.hparams.val_dir)
 
-        train_size = int(len(train_df) * self.hparams.train_test_split)
-
-        train_df, test_df = random_split(train_df, [train_size, len(train_df) - train_size])
-
+        train_size = int(len(train_df) *( 1 - self.hparams.train_test_split)) 
+        test_df = train_df[train_size:]
+        train_df = train_df[:train_size]
+      
         self.train_dataset = SQuADquestgen(train_df, self.hparams.tokenizer, self.hparams.max_len_inp, self.hparams.max_len_out)
         self.test_dataset = SQuADquestgen(test_df, self.hparams.tokenizer, self.hparams.max_len_inp, self.hparams.max_len_out)
 
@@ -81,14 +81,17 @@ if __name__== "__main__":
     output_path = str(path / 'output')
     OmegaConf.register_new_resolver("root_path", lambda: str(path))
 
+
+
     @hydra.main(version_base="1.3", config_path=config_path, config_name="squad")
     def test_datamodule(cofig: DictConfig):
         print("TEST DATAMODULE: ")
+        tokenizer = T5Tokenizer.from_pretrained(cofig.tokenizer.pretrained_model_name_or_path)
 
         datamodule = QuestgenDatamodule(
             train_dir = str(path / cofig.train_dir),
             val_dir = str(path / cofig.val_dir),
-            tokenizer = cofig.tokenizer,
+            tokenizer = tokenizer,
             train_test_split = cofig.train_test_split,
             max_len_inp = cofig.max_len_inp,
             max_len_out = cofig.max_len_out

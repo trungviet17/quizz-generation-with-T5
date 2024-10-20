@@ -44,9 +44,9 @@ class SQuADquestgen(Dataset):
         # get ids token -> return tensor
         data_row = self.data.iloc[idx]
 
-        answer = self.MASK_TOKEN
+        answer = self.MASK_TOKEN    
         if np.random.rand()  > self.masking_chance: 
-            answer = data_row['answer_text']
+            answer = data_row['answer']
 
         input_encoding = self.tokenizer(
             '{}{}{}'.format(answer, self.SEP_TOKEN, data_row['context']),

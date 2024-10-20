@@ -1,11 +1,10 @@
-
 tokenizer:
   _target_: transformers.T5Tokenizer.from_pretrained
   pretrained_model_name_or_path: t5-small
 
 data_frame: 
   _target_: pandas.read_csv
-  path : ${root_path}/data/questgen/questgen_train.csv
+  path : ${paths.data_dir}/data/questgen/questgen_train.csv
 
 max_len_inp: 512  
 max_len_out: 96   

@@ -10,7 +10,7 @@ import pyrootutils
 
 class T5Finetuner(pl.LightningModule): 
     
-    def __init__(self,model: T5ForConditionalGeneration, tokenizer: T5Tokenizer, 
+    def __init__(self,model: T5ForConditionalGeneration, 
                  optimizer: optim.Optimizer, scheduler: optim.lr_scheduler._LRScheduler ):
         """
         Khởi tạo att cần thiết để xây dựng mô hình bao bồm model, tokenizer, ... 
@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
     config_path = str(path / "configs" / "model")
 
-    @hydra.main(version_base="1.3", config_path= config_path, config_name = "t5finetuner")
+    @hydra.main(version_base="1.3", config_path= config_path, config_name = "t5finetunner")
     def test_model(config: DictConfig):   
 
         model = hydra.utils.instantiate(config)
