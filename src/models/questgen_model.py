@@ -17,10 +17,8 @@ class T5Finetuner(pl.LightningModule):
         Sử dụng hparams cho chỉ sử dụng để lưu tham số 
         """
         super(T5Finetuner, self).__init__()
-        self.model = model 
-        self.lr_scheduler = scheduler
-        self.optimizer = optimizer 
-        self.save_hyperparameters(logger=False)
+        self.model = model
+        self.save_hyperparameters(logger=False, ignore = ['model'])
     
     
     def forward(self, input_ids, attention_mask = None, labels = None): 
@@ -41,9 +39,9 @@ class T5Finetuner(pl.LightningModule):
             training step 
         """
         loss, output = self(
-            input_ids = batch["inp_ids"], 
-            attention_mask = batch['inp_mask'], 
-            labels= batch['labels']
+            input_ids = batch["input_ids"], 
+            attention_mask = batch['attention_mask'], 
+            labels= batch['label']
         )
 
         self.log('train_loss', loss, prog_bar=True, logger=True)
@@ -55,9 +53,9 @@ class T5Finetuner(pl.LightningModule):
         validation step 
         """
         loss, output = self(
-            input_ids = batch["inp_ids"], 
-            attention_mask = batch['inp_mask'], 
-            labels= batch['labels']
+            input_ids = batch["input_ids"], 
+            attention_mask = batch['attention_mask'], 
+            labels= batch['label']
         )
 
         self.log('val_loss', loss, prog_bar=True, logger=True)
@@ -66,9 +64,9 @@ class T5Finetuner(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         
         loss, output = self(
-            input_ids = batch["inp_ids"], 
-            attention_mask = batch['inp_mask'], 
-            labels= batch['labels']
+            input_ids = batch["input_ids"], 
+            attention_mask = batch['attention_mask'], 
+            labels= batch['label']
         )
 
         self.log('test_loss', loss, prog_bar=True, logger=True)
@@ -79,10 +77,14 @@ class T5Finetuner(pl.LightningModule):
         """
         optimizer setup 
         """
-        self.optimizer = self.optimizer(params = self.parameters())
-        self.lr_scheduler = self.lr_scheduler(optimizer = self.optimizer)
-        return self.optimizer, self.lr_scheduler
-    
+        optimizer = self.hparams.optimizer(params = self.parameters())
+        lr_scheduler = self.hparams.scheduler(optimizer = optimizer)
+        print(type(lr_scheduler))
+        return {
+          "optimizer" : optimizer, 
+          "lr_scheduler" : lr_scheduler, 
+          "monitor": "val_loss"
+        }
 
 
 if __name__ == '__main__': 
