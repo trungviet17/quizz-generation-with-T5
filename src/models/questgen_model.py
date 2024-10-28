@@ -38,7 +38,7 @@ class T5Finetuner(pl.LightningModule):
         self.bleu_5_score = BLEUScore(n_gram = 5)
 
         # rouge score
-        self.rouge_score = ROUGEScore(rouge_keys= ['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
+        self.rouge_score = ROUGEScore(rouge_keys= ("rouge1", "rouge2", "rougeL"), use_stemmer=False)
 
         self.save_hyperparameters(logger=False, ignore = ['model'])
     
