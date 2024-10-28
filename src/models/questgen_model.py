@@ -101,14 +101,7 @@ class T5Finetuner(pl.LightningModule):
             labels= batch['label']
         )
 
-        output_ids = self.model.model.generate(
-                input_ids=batch["input_ids"],
-                attention_mask=batch["attention_mask"]
-            )
-        bleu_4, _ = self.compute_bleu(output_ids, batch['label'])
-
         self.log('train_loss', loss, prog_bar=True, logger=True)
-        self.log('train_bleu_4', bleu_4, prog_bar=True, logger=True)
     
         return loss
         
