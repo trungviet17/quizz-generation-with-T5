@@ -99,7 +99,10 @@ class T5Finetuner(pl.LightningModule):
             labels= batch['label']
         )
 
-        output_ids = self.model.generate(batch["input_ids"])
+        output_ids = self.model.model.generate(
+                input_ids=batch["input_ids"],
+                attention_mask=batch["attention_mask"]
+            )
         bleu_4, _ = self.compute_bleu(output_ids, batch['label'])
 
         self.log('train_loss', loss, prog_bar=True, logger=True)
@@ -118,7 +121,10 @@ class T5Finetuner(pl.LightningModule):
             labels= batch['label']
         )
 
-        output_ids = self.model.generate(batch["input_ids"])
+        output_ids = self.model.model.generate(
+                input_ids=batch["input_ids"],
+                attention_mask=batch["attention_mask"]
+            )
         bleu_4, bleu_5 = self.compute_bleu(output_ids, batch['label'])
         rouge = self.compute_rouge(output_ids, batch['label'])
 
@@ -139,7 +145,6 @@ class T5Finetuner(pl.LightningModule):
             attention_mask = batch['attention_mask'], 
             labels= batch['label']
         )
-
         self.log('test_loss', loss, prog_bar=True, logger=True)
         return loss
     
