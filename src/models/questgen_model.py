@@ -2,6 +2,9 @@ import lightning.pytorch as pl
 from transformers import T5Tokenizer, T5ForConditionalGeneration, AdamW
 from omegaconf import DictConfig, OmegaConf
 import torch.optim as optim
+from peft import get_peft_model, LoraConfig, TaskType
+from torchmetrics.text.rouge import ROUGEScore
+from torchmetrics.text.bleu import BLEUScore
 
 import warnings 
 import hydra 
@@ -10,7 +13,7 @@ import pyrootutils
 
 class T5Finetuner(pl.LightningModule): 
     
-    def __init__(self,model: T5ForConditionalGeneration, 
+    def __init__(self,model: T5ForConditionalGeneration, tokenizer: T5Tokenizer, 
                  optimizer: optim.Optimizer, scheduler: optim.lr_scheduler._LRScheduler ):
         """
         Khởi tạo att cần thiết để xây dựng mô hình bao bồm model, tokenizer, ... 
@@ -18,7 +21,25 @@ class T5Finetuner(pl.LightningModule):
         """
         super(T5Finetuner, self).__init__()
         self.model = model
-        self.frozen_model()
+        self.tokenizer = tokenizer
+        
+        peft_config = LoraConfig(
+            task_type = TaskType.SEQ_2_SEQ_LM, 
+            inference_mode= False, 
+            r = 8, 
+            lora_alpha=32, 
+            lora_dropout=0.1
+        )
+        self.model = get_peft_model(self.model, peft_config)
+        self.model.print_trainable_parameters()
+
+        # bleu score 
+        self.bleu_4_score = BLEUScore(n_gram = 4)
+        self.bleu_5_score = BLEUScore(n_gram = 5)
+
+        # rouge score
+        self.rouge_score = ROUGEScore(rouge_keys= ['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
+
         self.save_hyperparameters(logger=False, ignore = ['model'])
     
     def frozen_model(self): 
@@ -30,8 +51,28 @@ class T5Finetuner(pl.LightningModule):
 
         for param in list(self.model.encoder.parameters()) + list(self.model.decoder.parameters()): 
             param.requires_grad = True
+
+
+    def compute_bleu(self, output_ids, target_ids): 
+        """
+        compute bleu 
+        """
+        output_text = self.tokenizer.batch_decode(output_ids, skip_special_tokens=True)
+        target_text = self.tokenizer.batch_decode(target_ids, skip_special_tokens=True)
+
+        return self.bleu_4_score(output_text, target_text), self.bleu_5_score(output_text, target_text)
+
+
+    def compute_rouge(self, output_ids, target_ids):
+        """
+        compute rouge 
+        """
+        output_text = self.tokenizer.batch_decode(output_ids, skip_special_tokens=True)
+        target_text = self.tokenizer.batch_decode(target_ids, skip_special_tokens=True)
+
+        return self.rouge_score(output_text, target_text)
+
             
-    
     def forward(self, input_ids, attention_mask = None, labels = None): 
         """
         feed forward 
@@ -55,7 +96,14 @@ class T5Finetuner(pl.LightningModule):
             labels= batch['label']
         )
 
+        output_ids = self.model.generate(batch["input_ids"])
+        bleu_4, bleu_5 = self.compute_bleu(output_ids, batch['label'])
+        rouge = self.compute_rouge(output_ids, batch['label'])
+
         self.log('train_loss', loss, prog_bar=True, logger=True)
+        self.log('train_bleu_4', bleu_4, prog_bar=True, logger=True)
+        self.log('train_rougeL', rouge['rougeL_fmeasure'], prog_bar=True, logger=True)
+    
         return loss
         
     
@@ -69,7 +117,18 @@ class T5Finetuner(pl.LightningModule):
             labels= batch['label']
         )
 
+        output_ids = self.model.generate(batch["input_ids"])
+        bleu_4, bleu_5 = self.compute_bleu(output_ids, batch['label'])
+        rouge = self.compute_rouge(output_ids, batch['label'])
+
         self.log('val_loss', loss, prog_bar=True, logger=True)
+        self.log('train_bleu_4', bleu_4, prog_bar=True, logger=True)
+        self.log('train_bleu_5', bleu_5, prog_bar=True, logger=True)
+        self.log('train_rouge1', rouge['rouge1_fmeasure'], prog_bar=True, logger=True)
+        self.log('train_rouge2', rouge['rouge2_fmeasure'], prog_bar=True, logger=True)
+        self.log('train_rougeL', rouge['rougeL_fmeasure'], prog_bar=True, logger=True)
+    
+
         return loss
     
     def test_step(self, batch, batch_idx):
