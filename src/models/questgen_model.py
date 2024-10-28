@@ -43,7 +43,7 @@ class T5Finetuner(pl.LightningModule):
         # rouge score
         self.rouge_score = ROUGEScore(rouge_keys= ("rouge1", "rouge2", "rougeL"), use_stemmer=False)
 
-        self.save_hyperparameters(logger=False, ignore = ['model'])
+        self.save_hyperparameters(logger=False, ignore = ['model', 'tokenizer'])
     
     def frozen_model(self): 
         """
