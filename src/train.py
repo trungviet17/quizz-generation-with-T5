@@ -7,6 +7,7 @@ import torch
 from lightning import Callback, LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import Logger
 from omegaconf import DictConfig
+import argparse
 
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 # ------------------------------------------------------------------------------------ #
@@ -106,7 +107,7 @@ def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
 
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
-def main(cfg: DictConfig) -> Optional[float]:
+def questgen_main(cfg: DictConfig) -> Optional[float]:
     """Main entry point for training.
 
     :param cfg: DictConfig configuration composed by Hydra.
@@ -128,5 +129,21 @@ def main(cfg: DictConfig) -> Optional[float]:
     return metric_value
 
 
+def distractorgen_main(cfg: DictConfig) -> Optional[float]:
+    pass 
+
+def main(model_training: str): 
+    if model_training == 'questgen':
+        questgen_main()
+    elif model_training == 'distractorgen': 
+        distractorgen_main()
+
+
+
 if __name__ == "__main__":
-    main()
+
+    parser = argparse.ArgumentParser(description= "Choose the model to train")
+    parser.add_argument('--model', type=str, help='Choose the model to train')
+    args = parser.parse_args()
+
+    main(args.model)
