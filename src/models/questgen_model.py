@@ -60,6 +60,7 @@ class T5Finetuner(pl.LightningModule):
         """
         compute bleu 
         """
+        target_ids = torch.where(target_ids == -100, self.tokenizer.pad_token_id, target_ids)
         output_text = self.tokenizer.batch_decode(output_ids, skip_special_tokens=True)
         target_text = self.tokenizer.batch_decode(target_ids, skip_special_tokens=True)
 
@@ -70,6 +71,7 @@ class T5Finetuner(pl.LightningModule):
         """
         compute rouge 
         """
+        target_ids = torch.where(target_ids == -100, self.tokenizer.pad_token_id, target_ids)
         output_text = self.tokenizer.batch_decode(output_ids, skip_special_tokens=True)
         target_text = self.tokenizer.batch_decode(target_ids, skip_special_tokens=True)
 
