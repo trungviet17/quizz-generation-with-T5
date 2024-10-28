@@ -5,7 +5,7 @@ import torch.optim as optim
 from peft import get_peft_model, LoraConfig, TaskType
 from torchmetrics.text.rouge import ROUGEScore
 from torchmetrics.text.bleu import BLEUScore
-
+import torch 
 import warnings 
 import hydra 
 import pyrootutils
@@ -22,6 +22,9 @@ class T5Finetuner(pl.LightningModule):
         super(T5Finetuner, self).__init__()
         self.model = model
         self.tokenizer = tokenizer
+        self.tokenizer.add_tokens("<sep>")
+        self.tokenizer.add_tokens("<mask>")
+        self.model.resize_token_embeddings(len(tokenizer))
         
         peft_config = LoraConfig(
             task_type = TaskType.SEQ_2_SEQ_LM, 
@@ -97,12 +100,10 @@ class T5Finetuner(pl.LightningModule):
         )
 
         output_ids = self.model.generate(batch["input_ids"])
-        bleu_4, bleu_5 = self.compute_bleu(output_ids, batch['label'])
-        rouge = self.compute_rouge(output_ids, batch['label'])
+        bleu_4, _ = self.compute_bleu(output_ids, batch['label'])
 
         self.log('train_loss', loss, prog_bar=True, logger=True)
         self.log('train_bleu_4', bleu_4, prog_bar=True, logger=True)
-        self.log('train_rougeL', rouge['rougeL_fmeasure'], prog_bar=True, logger=True)
     
         return loss
         
