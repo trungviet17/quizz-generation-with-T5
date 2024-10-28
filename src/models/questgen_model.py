@@ -18,8 +18,19 @@ class T5Finetuner(pl.LightningModule):
         """
         super(T5Finetuner, self).__init__()
         self.model = model
+        self.frozen_model()
         self.save_hyperparameters(logger=False, ignore = ['model'])
     
+    def frozen_model(self): 
+        """
+        freeze model 
+        """
+        for param in self.model.parameters(): 
+            param.requires_grad = False
+
+        for param in list(self.model.encoder.parameters()) + list(self.model.decoder.parameters()): 
+            param.requires_grad = True
+            
     
     def forward(self, input_ids, attention_mask = None, labels = None): 
         """
