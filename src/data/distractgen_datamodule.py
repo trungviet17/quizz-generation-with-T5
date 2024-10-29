@@ -10,7 +10,7 @@ from components.distractgen_dataset import DistractDataset
 class DistractDatamodule(pl.LightningDataModule): 
 
     def __init__(self, train_dir: str, val_dir: str, test_dir: str, tokenizer: T5Tokenizer,  
-                 max_len_inp: int = 512, max_len_out: int = 96, batch_size: int = 8, num_workers: int = 4, masking_chance: int = 0.3):
+                 max_len_inp: int = 512, max_len_out: int = 96, batch_size: int = 8, num_workers: int = 4):
 
         super(DistractDatamodule, self).__init__() 
         self.save_hyperparameters(logger=False)

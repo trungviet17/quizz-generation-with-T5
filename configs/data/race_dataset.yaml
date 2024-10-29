@@ -1,0 +1,11 @@
+df: 
+  _target_: pandas.read_csv
+  path : ${paths.data_dir}/data/distractgen/distractgen_train.csv
+
+tokenizer:
+  _target_: transformers.T5Tokenizer.from_pretrained
+  pretrained_model_name_or_path: t5-base
+
+max_len_inp: 512
+max_len_out: 96
+sep_token: "<sep>"
