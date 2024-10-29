@@ -124,11 +124,11 @@ class T5Finetuner(pl.LightningModule):
         rouge = self.compute_rouge(output_ids, batch['label'])
 
         self.log('val_loss', loss, prog_bar=True, logger=True)
-        self.log('train_bleu_4', bleu_4, prog_bar=True, logger=True)
-        self.log('train_bleu_5', bleu_5, prog_bar=True, logger=True)
-        self.log('train_rouge1', rouge['rouge1_fmeasure'], prog_bar=True, logger=True)
-        self.log('train_rouge2', rouge['rouge2_fmeasure'], prog_bar=True, logger=True)
-        self.log('train_rougeL', rouge['rougeL_fmeasure'], prog_bar=True, logger=True)
+        self.log('val_bleu_4', bleu_4, prog_bar=True, logger=True)
+        self.log('val_bleu_5', bleu_5, prog_bar=True, logger=True)
+        self.log('val_rouge1', rouge['rouge1_fmeasure'], prog_bar=True, logger=True)
+        self.log('val_rouge2', rouge['rouge2_fmeasure'], prog_bar=True, logger=True)
+        self.log('val_rougeL', rouge['rougeL_fmeasure'], prog_bar=True, logger=True)
     
 
         return loss
