@@ -32,12 +32,13 @@ class QuestgenDatamodule(pl.LightningDataModule):
         train_size = int(len(train_df) *( 1 - self.hparams.train_test_split)) 
         test_df = train_df[train_size:]
         train_df = train_df[:train_size]
+        if stage == 'fit' or stage is None:
+            self.train_dataset = SQuADquestgen(train_df, self.hparams.tokenizer, self.hparams.max_len_inp, self.hparams.max_len_out)
+            self.valid_dataset = SQuADquestgen(val_df, self.hparams.tokenizer, self.hparams.max_len_inp, self.hparams.max_len_out)
+        if stage == 'test' or stage is None:
+            self.test_dataset = SQuADquestgen(test_df, self.hparams.tokenizer, self.hparams.max_len_inp, self.hparams.max_len_out)
       
-        self.train_dataset = SQuADquestgen(train_df, self.hparams.tokenizer, self.hparams.max_len_inp, self.hparams.max_len_out)
-        self.test_dataset = SQuADquestgen(test_df, self.hparams.tokenizer, self.hparams.max_len_inp, self.hparams.max_len_out)
-
-        self.valid_dataset = SQuADquestgen(val_df, self.hparams.tokenizer, self.hparams.max_len_inp, self.hparams.max_len_out)
-
+     
 
 
     def train_dataloader(self) -> DataLoader: 
@@ -48,21 +49,21 @@ class QuestgenDatamodule(pl.LightningDataModule):
                           num_workers= self.hparams.num_workers)
     
 
-    def valid_dataloader(self) -> DataLoader: 
+    def val_dataloader(self) -> DataLoader: 
 
         return DataLoader(
                 self.valid_dataset,
-                batch_size = self.hpagrams.batch_size, 
+                batch_size = self.hparams.batch_size, 
                 shuffle = True, 
-                num_workers = self.hpagrams.num_workers
+                num_workers = self.hparams.num_workers
             )
     
     def test_dataloader(self):
         return DataLoader(
                 self.test_dataset,
-                batch_size = self.hpagrams.batch_size, 
+                batch_size = self.hparams.batch_size, 
                 shuffle = True, 
-                num_workers = self.hpagrams.num_workers
+                num_workers = self.hparams.num_workers
             )
 
 
