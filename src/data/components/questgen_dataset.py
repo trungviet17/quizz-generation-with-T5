@@ -12,7 +12,7 @@ import pyrootutils
 class SQuADquestgen(Dataset): 
     
     def __init__(self, data_frame: pd.DataFrame,  tokenizer: T5Tokenizer, max_len_inp: int = 512, 
-                 max_len_out: int = 96, sep_token: str = "<sep>", mask_token: str = "<mask>", masking_chance: float = 0.2): 
+                 max_len_out: int = 96, sep_token: str = "<sep>", masking_chance: float = 0.2): 
         """
         Khởi tạo các thông tin liên quan tới bộ dữ liệu 
         Input: đường dẫn tới file dữ liệu , chiều dài tối đa của input đầu và và đầu ra 
@@ -22,14 +22,12 @@ class SQuADquestgen(Dataset):
         self.max_len_inp = max_len_inp 
         self.max_len_out = max_len_out 
         self.tokenizer = tokenizer
-        self.masking_chance = masking_chance
 
         # update special token 
-        self.tokenizer.add_tokens(sep_token)
-        self.tokenizer.add_tokens(mask_token)
+        self.tokenizer.add_tokens(sep_token) 
 
         self.SEP_TOKEN = sep_token
-        self.MASK_TOKEN = mask_token
+
 
         self.data = data_frame 
         self._processing()
@@ -44,10 +42,7 @@ class SQuADquestgen(Dataset):
         # get ids token -> return tensor
         data_row = self.data.iloc[idx]
 
-        answer = self.MASK_TOKEN    
-        if np.random.rand()  > self.masking_chance: 
-            answer = data_row['answer']
-
+        answer = data_row['answer'] 
         input_encoding = self.tokenizer(
             '{}{}{}'.format(answer, self.SEP_TOKEN, data_row['context']),
             max_length=self.max_len_inp,

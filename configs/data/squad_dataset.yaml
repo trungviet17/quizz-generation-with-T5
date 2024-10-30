@@ -10,5 +10,3 @@ max_len_inp: 512
 max_len_out: 96   
 
 sep_token: "<sep>"  
-mask_token: "<mask>"  
-masking_chance: 0.2 
