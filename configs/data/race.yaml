@@ -1,4 +1,4 @@
-_target_: src.data.distraction_datamodule.DistractionDatamodule
+_target_: src.data.distractgen_datamodule.DistractDatamodule
 
 train_dir: ${paths.data_dir}/distractgen/train_distractgen.csv
 val_dir: ${paths.data_dir}/distractgen/val_distractgen.csv
