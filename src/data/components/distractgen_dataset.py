@@ -25,7 +25,7 @@ class DistractDataset(Dataset):
 
         input_encoding = self.tokenizer(
             '{} {} {} {} {}'.format(data_row['correct'], self.SEP_TOKEN, data_row['question'], self.SEP_TOKEN, data_row['context']),
-            max_length= self.source_max_token_len,
+            max_length= self.max_len_inp,
             padding='max_length',
             truncation= True,
             return_attention_mask=True,
@@ -36,7 +36,7 @@ class DistractDataset(Dataset):
 
         output_encoding = self.tokenizer(
             '{} {} {} {} {}'.format(data_row['incorrect1'], self.SEP_TOKEN, data_row['incorrect2'], self.SEP_TOKEN, data_row['incorrect3']),
-            max_length=self.target_max_token_len,
+            max_length=self.max_len_out,
             padding='max_length',
             truncation = True,
             return_attention_mask=True,
@@ -56,7 +56,7 @@ class DistractDataset(Dataset):
             incorrect3 = data_row['incorrect3'],
             input_ids = input_encoding['input_ids'].flatten(),
             attention_mask = input_encoding['attention_mask'].flatten(),
-            labels=labels.flatten()
+            label=labels.flatten()
         )
 
 

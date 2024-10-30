@@ -4,8 +4,8 @@ from transformers import T5Tokenizer
 import pandas as pd 
 from datasets import load_dataset
 from tqdm import tqdm 
-from components.distractgen_dataset import DistractDataset
-
+from src.data.components.distractgen_dataset import DistractDataset
+import os
 
 class DistractDatamodule(pl.LightningDataModule): 
 
@@ -18,6 +18,11 @@ class DistractDatamodule(pl.LightningDataModule):
 
     def prepare_data(self):
         """Download data if needed"""
+        
+        os.makedirs(os.path.dirname(self.hparams.train_dir), exist_ok=True)
+        os.makedirs(os.path.dirname(self.hparams.val_dir), exist_ok=True)
+        os.makedirs(os.path.dirname(self.hparams.test_dir), exist_ok=True)
+
         dataset = load_dataset("race", "middle")
         train_df = self.create_dataset(dataset['train'])
         val_df = self.create_dataset(dataset['validation'])
@@ -87,4 +92,4 @@ class DistractDatamodule(pl.LightningDataModule):
                 "incorrect3": curr_incorrect3
             })
             
-        return pd.Dataframe(data_row)
+        return pd.DataFrame(data_row)
