@@ -93,3 +93,13 @@ class DistractDatamodule(pl.LightningDataModule):
             })
             
         return pd.DataFrame(data_row)
+
+
+if __name__ == '__main__':
+
+    def test(): 
+    
+        pass 
+
+
+    pass 

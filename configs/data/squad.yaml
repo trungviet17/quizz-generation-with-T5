@@ -14,7 +14,7 @@ num_workers: 4
 
 train_test_split: 0.2
 
-max_len_inp: 512
-max_len_out: 96
+max_len_inp: 300
+max_len_out: 80
 
 masking_chance: 0.2

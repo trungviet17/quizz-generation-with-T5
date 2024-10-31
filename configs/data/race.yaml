@@ -11,4 +11,4 @@ tokenizer:
 batch_size: 16  
 num_workers: 4
 max_len_inp: 512
-max_len_out: 96
+max_len_out: 64
